@@ -1,8 +1,9 @@
 # .gitignore
 # Motivator Bot
 
-# contacts.py
+# Added modules
 contacts.py
+mailserver.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -61,3 +62,6 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Nano Swap Files
+*.swp

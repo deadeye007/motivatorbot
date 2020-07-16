@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
 # Import Python Libraries
-import random, sys, getopt
+import random, getopt, smtplib, sys
 from os import system, name
 
 # Import script modules
-import contacts, quote
+import contacts, mailserver, quote
 
 def logo():
     print('''
@@ -31,8 +31,8 @@ def clear():
 
 def quotes():
     try:
-        print(quote.messages[random.randint(0,len(quote.messages) - 1)])
-
+        body = (quote.messages[random.randint(0,len(quote.messages) - 1)])
+        return body
     except KeyboardInterrupt:
         print("Keyboard interrupt signal detected.\nExiting...")
         sys.exit()
@@ -53,7 +53,7 @@ def main(argv):
                 logo()
                 exit()
             else:
-                quotes()
+                print(quotes())
                 exit()
 
     except getopt.GetoptError:
@@ -62,15 +62,67 @@ def main(argv):
 
 def notify(who):
     if who == "all":
-        print("Email:\n"+contacts.emailContacts)
-        print("MMS:\n"+contacts.mmsContacts)
-        print("SMS:\n"+contacts.smsContacts)
+        smtp(who)
     elif who == "email":
-        print(contacts.emailContacts)
+        smtp(who)
     elif who == "mms":
-        print(contacts.mmsContacts)
+        smtp(who)
     elif who == "sms":
-        print(contacts.smsContacts)
+        smtp(who)
+
+def smtp(who):
+    try:
+        # Attempt to contact the SMTP server to send a message
+        body = quotes()
+        fromaddr = mailserver.sender
+        fqdn = mailserver.server
+
+        if who == "all":
+            toaddr = (contacts.email, contacts.mms, contacts.sms)
+        elif who == "email":
+            toaddr = contacts.email
+        elif who == "sms":
+            toaddr = contacts.sms
+        elif who == "mms":
+            toaddr = contacts.mms
+
+        server = smtplib.SMTP(fqdn)
+        server.set_debuglevel(1)
+        server.sendmail(fromaddr,toaddr,body)
+        server.quit()
+
+    except OSError:
+        print("Something went wrong...")
+    except smtplib.SMTPServerDisconnected:
+        # Server disconnected
+        print("The SMTP server unexpectedly disconnected or an attempt to connect was made too soon.")
+    except smtplib.SMTPResponseException:
+        # Built to show errors from SMTP server
+        print("The SMTP server responded with an error.")
+    except smtplib.SMTPSenderRefused:
+        # Server refused sender info
+        print("The SMTP server refused the sender address.")
+    except smtplib.SMTPRecipientsRefused:
+        # Server refused recipient(s)
+        print("The SMTP server refused one or more recipients.")
+    except smtplib.SMTPDataError:
+        # Server refused the message data
+        print("The SMTP server refused the content.\nMotivator Bot REALLY screwed up this time.")
+    except smtplib.SMTPConnectError:
+        # Server failed to connect to the SMTP server
+        print("The server failed to establish a connection with the SMTP server.")
+    except smtplib.SMTPHeloError:
+        # Server refused HELO message
+        print("The SMTP server refused our 'HELO' message.")
+        exit()
+    except smtplib.SMTPNotSupportedError:
+        # SMTP not supported
+        print("The attempted operation is not supported by the SMTP server.")
+    except smtplib.SMTPAuthenticationError:
+        # Server was unable to authenticate
+        print("Motivator Bot was unable to authenticate with SMTP.\nPlease check your username/password combination.")
+        exit()
+
 # Start the script
 if __name__ == "__main__":
     main(sys.argv[1:])

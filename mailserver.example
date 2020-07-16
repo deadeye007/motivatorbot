@@ -1,0 +1,5 @@
+#!/usr/bin/python3
+
+# Fill in the FQDN of your SMTP relay server and rename this to 'mailserver.py'
+
+server = "localhost"
