@@ -1,7 +1,11 @@
 #!/usr/bin/python3
 
-import quote, random, sys, getopt
+# Import Python Libraries
+import random, sys, getopt
 from os import system, name
+
+# Import script modules
+import contacts, quote
 
 def logo():
     print('''
@@ -35,11 +39,13 @@ def quotes():
 
 def main(argv):
     try:
-        opts, args = getopt.getopt(argv,"hqv",["help","quotes","version"])
+        opts, args = getopt.getopt(argv,"hn:qv",["help","notify","quotes","version"])
         for opt, arg in opts:
             if opt in ("-h","--help"):
                 logo()
                 exit()
+            elif opt in ("-n","--notify"):
+                notify(arg)
             elif opt in ("-q","--quotes"):
                 print('You currently have ' + str(len(quote.messages)) + ' quotes in total.')
                 exit()
@@ -54,6 +60,17 @@ def main(argv):
         print("Invalid argument.")
         exit()
 
+def notify(who):
+    if who == "all":
+        print("Email:\n"+contacts.emailContacts)
+        print("MMS:\n"+contacts.mmsContacts)
+        print("SMS:\n"+contacts.smsContacts)
+    elif who == "email":
+        print(contacts.emailContacts)
+    elif who == "mms":
+        print(contacts.mmsContacts)
+    elif who == "sms":
+        print(contacts.smsContacts)
 # Start the script
 if __name__ == "__main__":
     main(sys.argv[1:])

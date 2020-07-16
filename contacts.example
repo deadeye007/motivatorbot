@@ -1,0 +1,7 @@
+#!/usr/bin/python3
+
+# Rename this file 'contacts.py' in order to use the motivator bot's notify function.
+
+emailContacts = ("joebob@hisdomain.com")
+mmsContacts = ("5558675309@mms.att.net")
+smsContacts = ("5558675309@sms.att.net")
